@@ -91,27 +91,27 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    public void onSaveInstanceState(Bundle savedInstanceState) {
-//
-//        super.onSaveInstanceState(savedInstanceState);
-//        savedInstanceState.putString(Constants.LEFT_COUNT, leftEditText.getText().toString());
-//        savedInstanceState.putString(Constants.RIGHT_COUNT, rightEditText.getText().toString());
-//    }
-//
-//    @Override
-//    public void onRestoreInstanceState(Bundle savedInstanceState) {
-//        if (savedInstanceState.containsKey(Constants.LEFT_COUNT)) {
-//            leftEditText.setText(savedInstanceState.getString(Constants.LEFT_COUNT));
-//        } else {
-//            leftEditText.setText(String.valueOf(0));
-//        }
-//        if (savedInstanceState.containsKey(Constants.RIGHT_COUNT)) {
-//            rightEditText.setText(savedInstanceState.getString(Constants.RIGHT_COUNT));
-//        } else {
-//            rightEditText.setText(String.valueOf(0));
-//        }
-//    }
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(Constants.OP_1, firstEditText.getText().toString());
+        savedInstanceState.putString(Constants.RIGHT_COUNT, secondEditText.getText().toString());
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState.containsKey(Constants.LEFT_COUNT)) {
+            leftEditText.setText(savedInstanceState.getString(Constants.LEFT_COUNT));
+        } else {
+            leftEditText.setText(String.valueOf(0));
+        }
+        if (savedInstanceState.containsKey(Constants.RIGHT_COUNT)) {
+            rightEditText.setText(savedInstanceState.getString(Constants.RIGHT_COUNT));
+        } else {
+            rightEditText.setText(String.valueOf(0));
+        }
+    }
 //
 //    @Override
 //    public void onActivityResult(int requestCode, int resultCode, Intent intent) {

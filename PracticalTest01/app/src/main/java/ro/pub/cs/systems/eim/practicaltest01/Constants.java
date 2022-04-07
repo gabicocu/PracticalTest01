@@ -24,4 +24,6 @@ public interface Constants {
 
     final public static String BROADCAST_RECEIVER_EXTRA = "message";
     final public static String BROADCAST_RECEIVER_TAG = "[Message]";
+    final public static String OP_1 = "op1";
+    final public static String OP_2 = "op2";
 }
