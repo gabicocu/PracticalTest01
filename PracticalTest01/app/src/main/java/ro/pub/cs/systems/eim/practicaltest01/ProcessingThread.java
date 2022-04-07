@@ -49,6 +49,7 @@ public class ProcessingThread extends Thread {
         } catch (InterruptedException interruptedException) {
             interruptedException.printStackTrace();
         }
+
     }
 
     public void stopThread() {
