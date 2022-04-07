@@ -10,22 +10,23 @@ import android.widget.TextView;
 
 public class PracticalTest01SecondaryActivity extends AppCompatActivity {
 
-    private TextView numberOfClicksTextView;
-    private Button okButton, cancelButton;
+    private TextView operation;
+    private Button correctButton, incorrectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practical_test01_secondary);
 
-        numberOfClicksTextView = (TextView) findViewById(R.id.number_of_clicks_text_view);
+        operation = (TextView) findViewById(R.id.number_of_clicks_text_view);
         Intent intent = getIntent();
         if (intent != null && intent.getExtras().containsKey(Constants.NUMBER_OF_CLICKS)) {
-            int numberOfClicks = intent.getIntExtra(Constants.NUMBER_OF_CLICKS, -1);
-            numberOfClicksTextView.setText(String.valueOf(numberOfClicks));
+          String val = intent.getStringExtra(Constants.NUMBER_OF_CLICKS);
+          operation.setText(String.valueOf(val));
         }
-        okButton = (Button)findViewById(R.id.ok_button);
-        okButton.setOnClickListener(new View.OnClickListener() {
+
+        correctButton = (Button)findViewById(R.id.ok_button);
+        correctButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(RESULT_OK, null);
@@ -33,8 +34,8 @@ public class PracticalTest01SecondaryActivity extends AppCompatActivity {
             }
         });
 
-        cancelButton = (Button)findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        incorrectButton = (Button)findViewById(R.id.cancel_button);
+        incorrectButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(RESULT_CANCELED, null);

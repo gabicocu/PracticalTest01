@@ -2,8 +2,12 @@ package ro.pub.cs.systems.eim.practicaltest01;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +21,23 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
     private TextView operation;
     private Button addButton, minusButton;
     private Button navigateToSecondaryActivityButton;
+
+    private int serviceStatus = Constants.SERVICE_STOPPED;
+
+    private IntentFilter intentFilter = new IntentFilter();
+
+
+    private MessageBroadcastReceiver messageBroadcastReceiver = new MessageBroadcastReceiver();
+    private class MessageBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(Constants.BROADCAST_RECEIVER_TAG, intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA));
+            Toast t = Toast.makeText(getApplicationContext(),
+                    "Toast message " + intent.getStringExtra(Constants.BROADCAST_RECEIVER_EXTRA),
+                    Toast.LENGTH_LONG);
+            t.show();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +66,14 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
                 operation.setText(String.valueOf(firstOp) + " + " + String.valueOf(secondOp) + " = " + String.valueOf(result));
 
                 // service start activation
-//                if (leftNumberOfClicks + rightNumberOfClicks > Constants.NUMBER_OF_CLICKS_THRESHOLD
-//                        && serviceStatus == Constants.SERVICE_STOPPED) {
-//                    Intent intent = new Intent(getApplicationContext(), Test1ModelService.class);
-//                    intent.putExtra(Constants.FIRST_NUMBER, leftNumberOfClicks);
-//                    intent.putExtra(Constants.SECOND_NUMBER, rightNumberOfClicks);
-//                    getApplicationContext().startService(intent);
-//                    serviceStatus = Constants.SERVICE_STARTED;
+//                if(serviceStatus == Constants.SERVICE_STOPPED) {
+                    Intent intent = new Intent(getApplicationContext(), PracticalTest01Service.class);
+                    intent.putExtra(Constants.FIRST_NUMBER, firstOp);
+                    intent.putExtra(Constants.SECOND_NUMBER, secondOp);
+                    getApplicationContext().startService(intent);
+                    serviceStatus = Constants.SERVICE_STARTED;
 //                }
+//
 
             }
         });
@@ -66,28 +87,30 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
                 operation.setText(String.valueOf(firstOp) + " - " + String.valueOf(secondOp) + " = " + String.valueOf(result));
 
                 // service start activation
-//                if (leftNumberOfClicks + rightNumberOfClicks > Constants.NUMBER_OF_CLICKS_THRESHOLD
-//                        && serviceStatus == Constants.SERVICE_STOPPED) {
-//                    Intent intent = new Intent(getApplicationContext(), Test1ModelService.class);
-//                    intent.putExtra(Constants.FIRST_NUMBER, leftNumberOfClicks);
-//                    intent.putExtra(Constants.SECOND_NUMBER, rightNumberOfClicks);
-//                    getApplicationContext().startService(intent);
-//                    serviceStatus = Constants.SERVICE_STARTED;
+//                if(serviceStatus == Constants.SERVICE_STOPPED) {
+                    Intent intent = new Intent(getApplicationContext(), PracticalTest01Service.class);
+                    intent.putExtra(Constants.FIRST_NUMBER, firstOp);
+                    intent.putExtra(Constants.SECOND_NUMBER, secondOp);
+                    getApplicationContext().startService(intent);
+                    serviceStatus = Constants.SERVICE_STARTED;
 //                }
 
             }
         });
 //
-//        navigateToSecondaryActivityButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Intent intent = new Intent(getApplicationContext(), PracticalTest01SecondaryActivity.class);
-//                int numberOfClicks = Integer.parseInt(leftEditText.getText().toString()) +
-//                        Integer.parseInt(rightEditText.getText().toString());
-//                intent.putExtra(Constants.NUMBER_OF_CLICKS, numberOfClicks);
-//                startActivityForResult(intent, Constants.SECONDARY_ACTIVITY_REQUEST_CODE);
-//            }
-//        });
+        navigateToSecondaryActivityButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), PracticalTest01SecondaryActivity.class);
+                String op = operation.getText().toString();
+                intent.putExtra(Constants.NUMBER_OF_CLICKS, op);
+                startActivityForResult(intent, Constants.SECONDARY_ACTIVITY_REQUEST_CODE);
+            }
+        });
+
+        for (int index = 0; index < Constants.actionTypes.length; index++) {
+            intentFilter.addAction(Constants.actionTypes[index]);
+        }
 
     }
 
@@ -96,30 +119,57 @@ public class PracticalTest01MainActivity extends AppCompatActivity {
 
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(Constants.OP_1, firstEditText.getText().toString());
-        savedInstanceState.putString(Constants.RIGHT_COUNT, secondEditText.getText().toString());
+        savedInstanceState.putString(Constants.OP_2, secondEditText.getText().toString());
+        savedInstanceState.putString(Constants.RESULT, operation.getText().toString());
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState.containsKey(Constants.LEFT_COUNT)) {
-            leftEditText.setText(savedInstanceState.getString(Constants.LEFT_COUNT));
+        if (savedInstanceState.containsKey(Constants.OP_1)) {
+            firstEditText.setText(savedInstanceState.getString(Constants.OP_1));
         } else {
-            leftEditText.setText(String.valueOf(0));
+            firstEditText.setText(String.valueOf(0));
         }
-        if (savedInstanceState.containsKey(Constants.RIGHT_COUNT)) {
-            rightEditText.setText(savedInstanceState.getString(Constants.RIGHT_COUNT));
+        if (savedInstanceState.containsKey(Constants.OP_2)) {
+            secondEditText.setText(savedInstanceState.getString(Constants.OP_2));
         } else {
-            rightEditText.setText(String.valueOf(0));
+           secondEditText.setText(String.valueOf(0));
+        }
+
+        if (savedInstanceState.containsKey(Constants.RESULT)) {
+           operation.setText(savedInstanceState.getString(Constants.RESULT));
+        } else {
+            operation.setText(String.valueOf(0));
         }
     }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//        super.onActivityResult(requestCode, resultCode, intent);
-//        if (requestCode == Constants.SECONDARY_ACTIVITY_REQUEST_CODE) {
-//            Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
-//        }
-//    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(messageBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        unregisterReceiver(messageBroadcastReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(this, PracticalTest01Service.class);
+        stopService(intent);
+        super.onDestroy();
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == Constants.SECONDARY_ACTIVITY_REQUEST_CODE) {
+            Toast.makeText(this, "The activity returned with result " + resultCode, Toast.LENGTH_LONG).show();
+        }
+    }
 
 
 }
